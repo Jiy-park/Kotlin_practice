@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">코틀린 연습</string>
+    <string name="string_test">안녕</string>
+    <string name="test">테스트</string>
+</resources>

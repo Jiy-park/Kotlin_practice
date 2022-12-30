@@ -6,101 +6,22 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity">
-
+    <SeekBar
+        android:id="@+id/seek1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     <TextView
         android:id="@+id/tv1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
-    <TextView
-        android:id="@+id/tv2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/string_test"
-        android:textColor="@color/test_color"
-        android:textSize="50dp"/>
-
-    <TextView
-        android:id="@+id/tv3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/string_test"
-        android:textSize="50sp"
-        android:textStyle="bold|italic"/>
-
-    <TextView
-        android:id="@+id/tv4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ellipsize="marquee"
-        android:maxLength="8"
-        android:text="max_width_test"
-        android:textSize="50sp" />
-
-    <EditText
-        android:id="@+id/ed1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="edit_hint"/>
-
-
-    <EditText
-        android:id="@+id/ed2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:imeOptions="actionDone"
-        android:inputType="phone" />
-
-    <RadioGroup
-        android:id="@+id/group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <RadioButton
-            android:id="@+id/rb1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="btn1"/>
-
-        <RadioButton
-            android:id="@+id/rb2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="btn2"/>
-
-        <RadioButton
-            android:id="@+id/rb3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="btn3"/>
-    </RadioGroup>
-    <LinearLayout
+        android:text="0"
+        android:layout_gravity="center"/>
+    <RatingBar
+        android:id="@+id/rtbar1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_gravity="center"
+        android:rating="5.0"/>
 
-        <CheckBox
-            android:id="@+id/ch1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="check_box1"/>
-
-        <CheckBox
-            android:id="@+id/ch2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="check_box2"/>
-
-        <CheckBox
-            android:id="@+id/ch3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="check_box3"/>
-    </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/pb1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
 
 </LinearLayout>

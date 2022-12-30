@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Kotlin_practice</string>
     <string name="string_test">test_string</string>
+    <string name="test">test_string</string>
 </resources>
