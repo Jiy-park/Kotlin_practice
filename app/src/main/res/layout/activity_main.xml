@@ -6,22 +6,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity">
-    <SeekBar
-        android:id="@+id/seek1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <TextView
-        android:id="@+id/tv1"
+    <Button
+        android:id="@+id/btn1Main"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0"
-        android:layout_gravity="center"/>
-    <RatingBar
-        android:id="@+id/rtbar1"
-        android:layout_width="match_parent"
+        android:text="main"/>
+    <TextView
+        android:id="@+id/tv1Main"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:rating="5.0"/>
+        android:text="main"/>
+
 
 
 </LinearLayout>
