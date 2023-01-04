@@ -6,49 +6,60 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.CompoundButton
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.kotlin_practice.databinding.ActivityMainBinding
+import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("onFun", "onCreate")
         setContentView(binding.root)
-
-        val intent = Intent(this,SubActivity::class.java)
-        intent.putExtra("data1", 2023)
-        intent.putExtra("data2", "계묘년")
-
-        val return_intent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-            if(it.resultCode == Activity.RESULT_OK){
-                val msg = it.data?.getStringExtra("return")
-//                Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
-                binding.tv1Main.text = it.data?.getStringExtra("return")
+        //스피너
+        val item = listOf<String>("select one", "1", "2", "3", "4")
+        var adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, item)
+        binding.spinner.adapter = adapter
+        binding.spinner.onItemSelectedListener = object:AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                binding.tv1Main.text = item[position]
             }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+
         }
-        binding.btn1Main.setOnClickListener { return_intent.launch(intent) }
+        //리사이클러뷰
+        val data:MutableList<Memo> = createData()
+        var adapter2 = CustomAdapter()
+        adapter2.list_data = data
+
+        binding.recyclerView.adapter = adapter2
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)//세로 스크롤
+//        binding.recyclerView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL, false)//가로 스크롤
+//        binding.recyclerView.layoutManager = GridLayoutManager(this,3)//그리드 두번째 인자는 한줄당 표현할 개수
     }
 
-    override fun onStart() {
-        super.onStart()
-        Log.d("onFun", "onStart")
-        Toast.makeText(this, "onStart", Toast.LENGTH_SHORT).show()
-        binding.tv2Main.text = "onStart"
+    fun createData():MutableList<Memo>{
+        val data:MutableList<Memo> = mutableListOf()
+        for(i in 1..100){
+            val no:Int = i
+            val title:String = "${i}번째 텍스트"
+            val date:Long = System.currentTimeMillis()
+            data.add(Memo(no,title,date))
+        }
+        return data
     }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("onFun", "onPause_main")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d("onFun", "onStop_main")
-    }
-
 }

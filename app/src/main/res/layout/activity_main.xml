@@ -6,22 +6,21 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity">
-    <Button
-        android:id="@+id/btn1Main"
+    <Spinner
+        android:id="@+id/spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="main"/>
+        android:layout_gravity="center" />
     <TextView
         android:id="@+id/tv1Main"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="main"/>
-    <TextView
-        android:id="@+id/tv2Main"
-        android:layout_width="wrap_content"
+        android:text="default"
+        android:layout_gravity="center" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="main"/>
-
-
+        android:layout_gravity="center"/>
 
 </LinearLayout>
