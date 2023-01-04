@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("onFun", "onCreate")
         setContentView(binding.root)
 
         val intent = Intent(this,SubActivity::class.java)
@@ -26,10 +27,28 @@ class MainActivity : AppCompatActivity() {
         val return_intent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             if(it.resultCode == Activity.RESULT_OK){
                 val msg = it.data?.getStringExtra("return")
-                Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+//                Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
                 binding.tv1Main.text = it.data?.getStringExtra("return")
             }
         }
         binding.btn1Main.setOnClickListener { return_intent.launch(intent) }
     }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("onFun", "onStart")
+        Toast.makeText(this, "onStart", Toast.LENGTH_SHORT).show()
+        binding.tv2Main.text = "onStart"
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("onFun", "onPause_main")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("onFun", "onStop_main")
+    }
+
 }
