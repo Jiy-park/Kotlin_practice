@@ -21,15 +21,24 @@ import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    lateinit var listFragment:ListFragment_
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
         setFragment()
+        binding.btnSend.setOnClickListener {
+            listFragment.setValue("전달할 값")
+        }
     }
 
     fun setFragment(){
-        val listFragment:ListFragment_ = ListFragment_()
+        listFragment = ListFragment_()
+        var bundle = Bundle()
+        bundle.putString("key1","list")
+        bundle.putInt("key2",2023)
+        listFragment.arguments = bundle
         val transaction = supportFragmentManager.beginTransaction()
         transaction.add(R.id.frameLayout, listFragment)
         transaction.commit()
