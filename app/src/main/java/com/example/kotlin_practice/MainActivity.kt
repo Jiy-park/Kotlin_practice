@@ -29,9 +29,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setFragment(){
-        val listFragment:com.example.kotlin_practice.ListFragment = com.example.kotlin_practice.ListFragment()
+        val listFragment:ListFragment_ = ListFragment_()
         val transaction = supportFragmentManager.beginTransaction()
         transaction.add(R.id.frameLayout, listFragment)
         transaction.commit()
+    }
+
+    fun goDetail(){
+        val detailFragment:DetailFragment = DetailFragment()
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.add(R.id.frameLayout, detailFragment)
+        transaction.addToBackStack("detail")
+        transaction.commit()
+    }
+
+    fun goBack(){
+        onBackPressed()
     }
 }
