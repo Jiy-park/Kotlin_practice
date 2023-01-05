@@ -22,6 +22,8 @@ import kotlin.concurrent.thread
 class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     lateinit var listFragment:ListFragment_
+    lateinit var senderFragment: SenderFragment
+    lateinit var  receiverFragment: ReceiverFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,12 +37,17 @@ class MainActivity : AppCompatActivity() {
 
     fun setFragment(){
         listFragment = ListFragment_()
+        senderFragment = SenderFragment()
+        receiverFragment = ReceiverFragment()
+
         var bundle = Bundle()
         bundle.putString("key1","list")
         bundle.putInt("key2",2023)
         listFragment.arguments = bundle
         val transaction = supportFragmentManager.beginTransaction()
         transaction.add(R.id.frameLayout, listFragment)
+        transaction.add(R.id.senderFrame,senderFragment)
+        transaction.add(R.id.receiverFrame,receiverFragment)
         transaction.commit()
     }
 
