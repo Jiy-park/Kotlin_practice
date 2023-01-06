@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <declare-styleable name="CustomText">
-        <attr name="delimeter" format="string"/>
-    </declare-styleable>
-</resources>
-
-<!--<declare-styleable name="여기에 커스텀뷰의 이름 적기">-->
-<!--<attr name="커스텀 뷰의 속성 이름" format="속성의 형태"/>-->
