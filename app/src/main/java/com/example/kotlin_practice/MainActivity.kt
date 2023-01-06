@@ -1,7 +1,11 @@
 package com.example.kotlin_practice
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -21,45 +25,29 @@ import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    lateinit var listFragment:ListFragment_
-    lateinit var senderFragment: SenderFragment
-    lateinit var  receiverFragment: ReceiverFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        val customView = CustomView(this,"안녕하세용")
+        binding.frameLayout.addView(customView)
+    }
+}
+class CustomView(context:Context, text:String):View(context){
+    val text:String
 
-        setFragment()
-        binding.btnSend.setOnClickListener {
-            listFragment.setValue("전달할 값")
-        }
+    init{
+        this.text = text
     }
 
-    fun setFragment(){
-        listFragment = ListFragment_()
-        senderFragment = SenderFragment()
-        receiverFragment = ReceiverFragment()
-
-        var bundle = Bundle()
-        bundle.putString("key1","list")
-        bundle.putInt("key2",2023)
-        listFragment.arguments = bundle
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.add(R.id.frameLayout, listFragment)
-        transaction.add(R.id.senderFrame,senderFragment)
-        transaction.add(R.id.receiverFrame,receiverFragment)
-        transaction.commit()
-    }
-
-    fun goDetail(){
-        val detailFragment:DetailFragment = DetailFragment()
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.add(R.id.frameLayout, detailFragment)
-        transaction.addToBackStack("detail")
-        transaction.commit()
-    }
-
-    fun goBack(){
-        onBackPressed()
+    override fun onDraw(canvas: Canvas?) {
+        super.onDraw(canvas)
+        val paint = Paint()
+        paint.color = Color.BLACK
+        paint.textSize = 100F
+        canvas?.drawText(text, 0F, 100F, paint)
+        //화면의 왼쪽 상단부터 (x:0, y:0)임
+        //또한 drawText가 글자를 그릴 때 글자의 맨왼쪽 아래가 좌표의 시작점
+        //textSize == 100F이므로 y좌표도 100F로 설정해야 글자가 안잘림
     }
 }
