@@ -31,13 +31,5 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        val textList = listOf<String>("뷰A", "뷰B", "뷰C", "뷰D")
-        val customAdapter = CustomPagerAdapter()
-        customAdapter.textList = textList
-        binding.viewPager.adapter = customAdapter
-        val tabTitles = listOf<String>("view A", "view B", "view C", "view D",)
-        TabLayoutMediator(binding.tabLayout, binding.viewPager){ tab, position->
-            tab.text = tabTitles[position]
-        }.attach()
     }
 }
