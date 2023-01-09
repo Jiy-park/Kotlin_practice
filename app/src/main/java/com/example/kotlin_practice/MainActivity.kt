@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.ListFragment
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.kotlin_practice.databinding.ActivityMainBinding
@@ -30,6 +31,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        val shared = PreferenceManager.getDefaultSharedPreferences(this)
+        binding.btnCheck.setOnClickListener {
+            val name = shared.getBoolean("key_add_shortcut", false)
+            Log.d("log_check", "$name")
+        }
 
     }
 }
