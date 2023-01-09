@@ -28,9 +28,27 @@ import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    val helper = SqliteHelper(this, "memo", 1)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        val adapter = RecyclerAdapter()
+        adapter.helper = helper
+        adapter.listData.addAll(helper.selectMemo())
+        binding.recyclerMemo.adapter = adapter
+        binding.recyclerMemo.layoutManager = LinearLayoutManager(this)
+
+        binding.btnSave.setOnClickListener {
+            if(binding.editMemo.text.toString().isNotEmpty()){
+                val memo = Memo(null, binding.editMemo.text.toString(),System.currentTimeMillis())
+                helper.insertMemo(memo)
+
+                adapter.listData.clear()
+                adapter.listData.addAll(helper.selectMemo())
+                adapter.notifyDataSetChanged()
+                binding.editMemo.setText("")
+            }
+        }
     }
 }

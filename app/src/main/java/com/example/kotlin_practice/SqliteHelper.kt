@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class SqliteHelper(context: Context, name:String, version:Int):SQLiteOpenHelper(context, name, null, version) {
     override fun onCreate(db: SQLiteDatabase?) {
         val create = "create table memo("+
-                "no integer primary key, "+
+                "memoNo integer primary key, "+
                 "content text,"+
                 "datetime integer"+
                 ")"
