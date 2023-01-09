@@ -31,11 +31,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        val shared = PreferenceManager.getDefaultSharedPreferences(this)
-        binding.btnCheck.setOnClickListener {
-            val name = shared.getBoolean("key_add_shortcut", false)
-            Log.d("log_check", "$name")
-        }
 
     }
 }
