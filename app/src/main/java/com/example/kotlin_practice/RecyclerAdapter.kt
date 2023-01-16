@@ -8,8 +8,8 @@ import com.example.kotlin_practice.databinding.ItemRecyclerBinding
 import java.text.SimpleDateFormat
 
 class RecyclerAdapter:RecyclerView.Adapter<RecyclerAdapter.Holder>() {
-    var listData = mutableListOf<Memo>()
-    var helper:SqliteHelper? = null
+    var listData = mutableListOf<RoomMemo>()
+    var helper:RoomHelper? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val binding = ItemRecyclerBinding.inflate(LayoutInflater.from(parent.context),parent, false)
@@ -18,7 +18,7 @@ class RecyclerAdapter:RecyclerView.Adapter<RecyclerAdapter.Holder>() {
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val memo = listData[position]
-        holder.setMemo(memo)
+        holder.setRoomMemo(memo)
     }
 
     override fun getItemCount(): Int {
@@ -26,17 +26,17 @@ class RecyclerAdapter:RecyclerView.Adapter<RecyclerAdapter.Holder>() {
     }
 
     inner class Holder(val binding:ItemRecyclerBinding):RecyclerView.ViewHolder(binding.root){
-        var mMemo:Memo? = null
+        var mRoomMemo:RoomMemo? = null
 
         init{
             binding.btnDelete.setOnClickListener {
-                helper?.deleteMemo(mMemo!!)
-                listData.remove(mMemo)
+                helper?.roomMemoDao()?.delete(mRoomMemo!!)
+                listData.remove(mRoomMemo)
                 notifyDataSetChanged()
             }
         }
-        fun setMemo(memo:Memo){
-            this.mMemo = memo
+        fun setRoomMemo(memo:RoomMemo){
+            this.mRoomMemo = memo
             binding.tvNo.text = "${memo.no}"
             binding.tvContent.text = memo.content
             val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm")
