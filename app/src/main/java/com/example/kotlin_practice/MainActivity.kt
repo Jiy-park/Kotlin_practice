@@ -36,67 +36,57 @@ import kotlin.concurrent.thread
 class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
-    lateinit var cameraPermission:ActivityResultLauncher<String> // 카메라 권한
-    lateinit var storagePermission:ActivityResultLauncher<String> // 저장소 권한
-    lateinit var cameraLauncher:ActivityResultLauncher<Uri> // 카메라 앱 호출
-    lateinit var galleryLauncher:ActivityResultLauncher<String> //갤러리
-    var photoUri:Uri? = null
-
+    
+    /**
+     * 안드로이드  중요 규칙 "백그라운드 스레드는 UI구성 요소에 접근하면 안된다"
+     * EX) activity_main.xml에 텍스트뷰를 하나 만들고 백라운드 스레드를 통해 텍스트 뷰를 업데이트 하면 예외를 발생시키고 앱을 종료함
+     * 메인스레드 (UI스레드) 외에는 UI를 업데이트 할 수 없음. 이는 모든 프로그램 공통
+     * **/
+    
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        Log.d("LOG_CHECK", "IN ON_CREATE1")
-//        setViews()
+        var thread1 = WorkerThread() // Thread 객체 이용
+        thread1.start()
 
-        storagePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()){ isGranted->
-            Log.d("LOG_CHECK", "IN STORAGE_PERMISSION, isGranted : ${isGranted.toString()}")
-            if(isGranted == true) { setViews() }
-            else{
-                Toast.makeText(baseContext, "외부 저장소 권한을 승인해야 앱을 사용할 수 있습니다.", Toast.LENGTH_SHORT).show()
-                finish()
+        var thread2 = Thread(WorkerRunnable()) //Runnabel 인터페이스 이용
+        thread2.start()
+
+        Thread{ //람다식으로 Runnable 익명객체 이용
+            var i = 0
+            while(i < 10){
+                i++
+                Log.i("LOG_CHECK","lambda : "+i)
+            }
+        }.start()
+
+        thread(start = true){ //코틀린에서 제공하는 thread 구현 // 얘는 좀 다른데?
+            var i = 0
+            while(i < 10){
+                i++
+                Log.i("LOG_CHECK", "thread : "+i)
             }
         }
-
-        Log.d("LOG_CHECK", "IN ON_CREATE2")
-        cameraPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()){ isGranted ->
-            Log.d("LOG_CHECK", "IN CAMERA_PERMISSION")
-            if(isGranted == true) { openCamera() }
-            else {
-                Toast.makeText(baseContext, "카메라 권한을 승인해야 카메라를 사용할 수 있습니다.", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-
-        }
-        Log.d("LOG_CHECK", "IN ON_CREATE3")
-        cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()){ isSuccess->
-            Log.d("LOG_CHECK", "IN CAMERA_LAUNCHER")
-            if(isSuccess == true) { binding.ivPrev.setImageURI(photoUri) }
-        }
-        galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()){ uri->
-            binding.ivPrev.setImageURI(uri)
-        }
-        storagePermission.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
     }
-
-    fun setViews(){
-        Log.d("LOG_CHECK", "IN SET_VIEWS")
-        binding.btnCamera.setOnClickListener {
-            cameraPermission.launch(android.Manifest.permission.CAMERA)
-        }
-        binding.btnGallery.setOnClickListener {
-            openGallery()
+}
+class WorkerThread:Thread(){
+    override fun run() {
+        var i = 0
+        while(i < 10){
+            i++
+            Log.i("LOG_CHECK","thread : "+i)
         }
     }
+}
 
-    fun openCamera(){
-        Log.d("LOG_CHECK", "IN OPEN_CAMERA")
-        val photoFile = File.createTempFile("IMG_", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES))
-        photoUri = FileProvider.getUriForFile(this, "${packageName}.provider", photoFile)
-        cameraLauncher.launch(photoUri)
-    }
-
-    fun openGallery(){
-        galleryLauncher.launch("image/*")
+class WorkerRunnable:Runnable{
+    override fun run() {
+        var i = 0
+        while(i < 10){
+            i++
+            Log.i("LOG_CHECK","runnable : "+i)
+        }
     }
 }
