@@ -39,11 +39,6 @@ import java.net.URL
 import java.util.jar.Manifest
 import kotlin.concurrent.thread
 
-suspend fun loadImage(imageUrl:String):Bitmap{
-    val url = URL(imageUrl)
-    val stream = url.openStream()
-    return BitmapFactory.decodeStream(stream)
-}
 class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
@@ -51,32 +46,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        binding.run{
-            btnDownload.setOnClickListener {
-                CoroutineScope(Dispatchers.Main).launch{
-                    progress.visibility = View.VISIBLE
-                    val url = editUrl.text.toString()
-                    val bitmap = withContext(Dispatchers.IO) {
-                        loadImage(url)
-                    }
-                    imageView.setImageBitmap(bitmap)
-                    progress.visibility = View.GONE
-                }
-            }
-        }
-
-
-//        위의 코드와 같음
-//        binding.btnDownload.setOnClickListener {
-//            CoroutineScope(Dispatchers.Main).launch {
-//                binding.progress.visibility = View.VISIBLE
-//                val url = binding.editUrl.text.toString()
-//                val bitmap = withContext(Dispatchers.IO){
-//                    loadImage(url)
-//                }
-//                binding.imageView.setImageBitmap(bitmap)
-//                binding.progress.visibility = View.GONE
-//            }
-//        }
     }
+
+    fun serviceStart(view:View){
+        val intent = Intent(this, MyService::class.java)
+        intent.action = MyService.ACTION_START
+        startService(intent)
+    }
+
+    fun serviceStop(view:View){
+        val intent2 = Intent(this, MyService::class.java)
+        stopService(intent2)
+    }
+
+
 }
