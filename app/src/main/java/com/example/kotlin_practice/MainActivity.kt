@@ -3,6 +3,8 @@ package com.example.kotlin_practice
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -28,46 +30,53 @@ import androidx.room.Room
 import com.example.kotlin_practice.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
+import java.net.URL
 import java.util.jar.Manifest
 import kotlin.concurrent.thread
 
+suspend fun loadImage(imageUrl:String):Bitmap{
+    val url = URL(imageUrl)
+    val stream = url.openStream()
+    return BitmapFactory.decodeStream(stream)
+}
 class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
-    var total = 0
-    var started = false
-
-    val handler = object :Handler(Looper.getMainLooper()){
-        override fun handleMessage(msg: Message) {
-            val minute = String.format("%02d",total/60)
-            val second = String.format("%02d",total%60)
-            binding.tvTimer.text = "$minute : $second"
-        }
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        binding.btnStart.setOnClickListener {
-            started = true
-            thread(start = true){
-                while(started){
-                    Thread.sleep(1000)
-                    if(started == true){
-                        total++
-                        handler.sendEmptyMessage(0)
+        binding.run{
+            btnDownload.setOnClickListener {
+                CoroutineScope(Dispatchers.Main).launch{
+                    progress.visibility = View.VISIBLE
+                    val url = editUrl.text.toString()
+                    val bitmap = withContext(Dispatchers.IO) {
+                        loadImage(url)
                     }
+                    imageView.setImageBitmap(bitmap)
+                    progress.visibility = View.GONE
                 }
             }
         }
 
-        binding.btnEnd.setOnClickListener {
-            if(started == true){
-                started = false
-                total = 0
-                binding.tvTimer.text = "00 : 00"
-            }
-        }
+
+//        위의 코드와 같음
+//        binding.btnDownload.setOnClickListener {
+//            CoroutineScope(Dispatchers.Main).launch {
+//                binding.progress.visibility = View.VISIBLE
+//                val url = binding.editUrl.text.toString()
+//                val bitmap = withContext(Dispatchers.IO){
+//                    loadImage(url)
+//                }
+//                binding.imageView.setImageBitmap(bitmap)
+//                binding.progress.visibility = View.GONE
+//            }
+//        }
     }
 }
