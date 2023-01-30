@@ -50,36 +50,4 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun serviceStart(view:View){
-        val intent = Intent(this, MyService::class.java)
-        intent.action = MyService.ACTION_START
-        startService(intent)
-    }
-
-    fun serviceStop(view:View){
-        val intent2 = Intent(this, MyService::class.java)
-        stopService(intent2)
-    }
-
-    var myService:MyService? = null
-    var isService = false
-    val connection = object:ServiceConnection{
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            val binder = service as MyService.MyBinder
-            myService = binder.getService()
-            isService = true
-        }
-        override fun onServiceDisconnected(name: ComponentName?) { isService = false }
-    }
-    fun serviceBind(view:View){
-        val intent = Intent(this, MyService::class.java)
-        bindService(intent, connection, Context.BIND_AUTO_CREATE)
-    }
-    fun serviceUnbind(view:View){
-        if(isService == true){
-            unbindService(connection)
-            isService = false
-        }
-    }
-
 }
