@@ -23,16 +23,22 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.core.view.PointerIconCompat.load
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.ListFragment
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
+import com.bumptech.glide.Glide
+import com.bumptech.glide.Glide.with
 import com.example.kotlin_practice.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.*
+import retrofit2.*
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
@@ -47,35 +53,33 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        binding.request.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch{
-                try{
-                    var urlTxt = binding.edUrl.text.toString()
-                    if (urlTxt.startsWith("https") == false) {
-                        urlTxt = "https://${urlTxt}"
-                    }
-                    val url = URL(urlTxt)
-                    val urlConnection = url.openConnection() as HttpURLConnection
-                    urlConnection.requestMethod = "GET"
-                    if (urlConnection.responseCode == HttpURLConnection.HTTP_OK) {
-                        val streamReader = InputStreamReader(urlConnection.inputStream)
-                        val buffered = BufferedReader(streamReader)
-                        val content = StringBuilder()
-                        while (true) {
-                            val line = buffered.readLine() ?: break
-                            content.append(line)
-                        }
-                        buffered.close()
-                        urlConnection.disconnect()
-                        launch(Dispatchers.Main) {
-                            binding.textView.text = content.toString()
-                        }
-                    }
-                }
-                catch (e:Exception) { e.printStackTrace() }
-            }
 
+        val adapter = Adapter()
+        binding.recycler.run{
+            this.adapter = adapter
+            layoutManager = LinearLayoutManager(this@MainActivity)
         }
-    }
 
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.github.com")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        binding.btnRequest.setOnClickListener {
+            val githubService = retrofit.create(GithubService::class.java)
+            githubService.users().enqueue(object : Callback<Repository>{
+                override fun onResponse(call: Call<Repository>, response: Response<Repository>) {
+                    adapter.user_list = response.body() as Repository
+                    adapter.notifyDataSetChanged()
+                }
+                override fun onFailure(call: Call<Repository>, t: Throwable) {}
+            })
+        }
+
+
+    }
+}
+interface GithubService{
+    @GET("users/Kotlin/repos")
+    fun users(): Call<Repository>
 }
