@@ -32,11 +32,11 @@ import androidx.room.Room
 import com.example.kotlin_practice.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import java.io.BufferedReader
 import java.io.File
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
 import java.net.URL
 import java.util.jar.Manifest
 import kotlin.concurrent.thread
@@ -47,7 +47,35 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        binding.request.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch{
+                try{
+                    var urlTxt = binding.edUrl.text.toString()
+                    if (urlTxt.startsWith("https") == false) {
+                        urlTxt = "https://${urlTxt}"
+                    }
+                    val url = URL(urlTxt)
+                    val urlConnection = url.openConnection() as HttpURLConnection
+                    urlConnection.requestMethod = "GET"
+                    if (urlConnection.responseCode == HttpURLConnection.HTTP_OK) {
+                        val streamReader = InputStreamReader(urlConnection.inputStream)
+                        val buffered = BufferedReader(streamReader)
+                        val content = StringBuilder()
+                        while (true) {
+                            val line = buffered.readLine() ?: break
+                            content.append(line)
+                        }
+                        buffered.close()
+                        urlConnection.disconnect()
+                        launch(Dispatchers.Main) {
+                            binding.textView.text = content.toString()
+                        }
+                    }
+                }
+                catch (e:Exception) { e.printStackTrace() }
+            }
 
+        }
     }
 
 }
