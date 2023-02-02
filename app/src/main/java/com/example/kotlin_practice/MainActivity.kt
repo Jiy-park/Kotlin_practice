@@ -54,32 +54,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        val adapter = Adapter()
-        binding.recycler.run{
-            this.adapter = adapter
-            layoutManager = LinearLayoutManager(this@MainActivity)
-        }
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.github.com")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        binding.btnRequest.setOnClickListener {
-            val githubService = retrofit.create(GithubService::class.java)
-            githubService.users().enqueue(object : Callback<Repository>{
-                override fun onResponse(call: Call<Repository>, response: Response<Repository>) {
-                    adapter.user_list = response.body() as Repository
-                    adapter.notifyDataSetChanged()
-                }
-                override fun onFailure(call: Call<Repository>, t: Throwable) {}
-            })
-        }
-
 
     }
-}
-interface GithubService{
-    @GET("users/Kotlin/repos")
-    fun users(): Call<Repository>
 }
