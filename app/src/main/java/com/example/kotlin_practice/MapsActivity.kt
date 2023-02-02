@@ -1,5 +1,7 @@
 package com.example.kotlin_practice
 
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +15,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.example.kotlin_practice.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.maps.android.clustering.ClusterManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -23,6 +26,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
+    private lateinit var  clusterManager:ClusterManager<Row>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,43 +42,37 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        Log.d("LOG_CHECK", "MapsActivity :: onMapReady() called")
+        clusterManager = ClusterManager(this,mMap)
+        mMap.setOnCameraIdleListener(clusterManager)
+        mMap.setOnMarkerClickListener(clusterManager)
+
         loadLibraries()
     }
 
     fun loadLibraries(){
-        Log.d("LOG_CHECK", "MapsActivity :: loadLibraries() called1")
         val retrofit = Retrofit.Builder()
             .baseUrl(SeoulOpenApi.DOMAIN)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val seoulOpenService = retrofit.create(SeoulOpenService::class.java)
-        Log.d("LOG_CHECK", "MapsActivity :: loadLibraries() called2")
         seoulOpenService
             .getLibrary(SeoulOpenApi.API_KEY)
             .enqueue(object : Callback<Library>{
                 override fun onFailure(call: Call<Library>, t: Throwable) {
-                    Log.d("LOG_CHECK", "MapsActivity :: onFailure() called")
                     Toast.makeText(baseContext, "서버에서 데이터를 가져올 수 없습니다.",Toast.LENGTH_SHORT).show()
                 }
                 override fun onResponse(call: Call<Library>, response: Response<Library>) {
-                    Log.d("LOG_CHECK", "MapsActivity :: onResponse() called")
                     showLibraries(response.body() as Library)
                 }
             })
-        Log.d("LOG_CHECK", "MapsActivity :: loadLibraries() called3")
     }
 
     fun showLibraries(libraries: Library){
-        Log.d("LOG_CHECK", "MapsActivity :: showLibraries() called")
         val latLngBounds = LatLngBounds.Builder()
         for(lib in libraries.SeoulPublicLibraryInfo.row){
+            clusterManager.addItem(lib)
             val position = LatLng(lib.XCNTS.toDouble(), lib.YDNTS.toDouble())
-            val marker = MarkerOptions()
-                .position(position)
-                .title(lib.LBRRY_NAME)
-            mMap.addMarker(marker)
-            latLngBounds.include(marker.position)
+            latLngBounds.include(position)
         }
         val bounds = latLngBounds.build()
         val padding = 0

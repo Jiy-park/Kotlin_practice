@@ -1,5 +1,8 @@
 package com.example.kotlin_practice
 
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.clustering.ClusterItem
+
 data class Row(
     val ADRES: String,
     val CODE_VALUE: String,
@@ -13,4 +16,12 @@ data class Row(
     val TEL_NO: String,
     val XCNTS: String,
     val YDNTS: String
-)
+):ClusterItem{
+    override fun hashCode(): Int = LBRRY_SEQ_NO.toInt()
+
+    override fun getPosition(): LatLng = LatLng(XCNTS.toDouble(), YDNTS.toDouble())
+
+    override fun getTitle(): String? = LBRRY_NAME
+
+    override fun getSnippet(): String? = ADRES
+}
