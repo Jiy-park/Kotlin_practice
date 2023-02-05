@@ -35,6 +35,9 @@ import com.bumptech.glide.Glide.with
 import com.example.kotlin_practice.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
@@ -57,8 +60,23 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val database = Firebase.database
-        val myRef = database.getReference("message")
-        myRef.setValue("Hello Firebase!")
+        val myRef = database.getReference("bbs") // 데이터베이스 루트
+        myRef.child("name").setValue("Scott") // 루트의 자식 개수 제한은 없는듯?
+        myRef.child("age").setValue(19) // 루트의 자식 개수 제한은 없는듯?
+        myRef.child("te").setValue("d") // 루트의 자식 개수 제한은 없는듯?
+        myRef.child("name").get()// 데이터베이스 읽어오기
+            .addOnSuccessListener { Log.d("LOG_CHECK", "MainActivity :: onCreate() called ::  name = ${it.value}") } // 성공
+            .addOnFailureListener { Log.d("LOG_CHECK", "MainActivity :: onCreate() called :: error$it") } // 실패
+
+        myRef.child("name").addValueEventListener(object : ValueEventListener{ // 실시간 데이터 조회
+            override fun onDataChange(snapshot: DataSnapshot) {
+                Log.d("LOG_CHECK", "MainActivity :: onDataChange() called :: ${snapshot.value}")
+                print(snapshot.value)
+            }
+            override fun onCancelled(error: DatabaseError) {
+                print(error.message)
+            }
+        })
 
     }
 }
