@@ -35,6 +35,8 @@ import com.bumptech.glide.Glide.with
 import com.example.kotlin_practice.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
@@ -54,6 +56,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        val database = Firebase.database
+        val myRef = database.getReference("message")
+        myRef.setValue("Hello Firebase!")
 
     }
 }
