@@ -54,29 +54,53 @@ import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    val database =  Firebase.database("https://android-with-kotlin-8d5bc-default-rtdb.asia-southeast1.firebasedatabase.app/")
+    val myRef = database.getReference("users")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        val database = Firebase.database
-        val myRef = database.getReference("bbs") // 데이터베이스 루트
-        myRef.child("name").setValue("Scott") // 루트의 자식 개수 제한은 없는듯?
-        myRef.child("age").setValue(19) // 루트의 자식 개수 제한은 없는듯?
-        myRef.child("te").setValue("d") // 루트의 자식 개수 제한은 없는듯?
-        myRef.child("name").get()// 데이터베이스 읽어오기
-            .addOnSuccessListener { Log.d("LOG_CHECK", "MainActivity :: onCreate() called ::  name = ${it.value}") } // 성공
-            .addOnFailureListener { Log.d("LOG_CHECK", "MainActivity :: onCreate() called :: error$it") } // 실패
-
-        myRef.child("name").addValueEventListener(object : ValueEventListener{ // 실시간 데이터 조회
+        myRef.addValueEventListener(object :ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                Log.d("LOG_CHECK", "MainActivity :: onDataChange() called :: ${snapshot.value}")
-                print(snapshot.value)
+                binding.txtList.text = ""
+                for(item in snapshot.children){ // snapshot.children에 user들이 저장되어 있음 그중 하나씩 접근(item)
+                    item.getValue(User::class.java)?.let { user-> //getValue로 파이어베이스 데이터를 가져옴 이때 아직 코틀린 클래스가 아니므로 타입캐스팅을 해줌
+                        binding.txtList.append("${user.name} : ${user.password}\n")
+                    }
+                }
             }
+
             override fun onCancelled(error: DatabaseError) {
                 print(error.message)
             }
         })
 
+        with(binding){
+            btnPost.setOnClickListener {
+                val name = edName.text.toString()
+                val password = edAge.text.toString()
+                val user = User(name, password)
+                addItem(user)
+            }
+        }
+
+    }
+    fun addItem(user:User){
+        val id = myRef.push().key!!
+        user.id = id
+        myRef.child(id).setValue(user)
+    }
+}
+
+class User{
+    var id:String = ""
+    var name:String = ""
+    var password:String = ""
+
+    constructor()
+    constructor(name:String, password:String){
+        this.name = name
+        this.password = password
     }
 }
