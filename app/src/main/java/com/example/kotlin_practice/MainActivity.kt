@@ -33,6 +33,7 @@ import androidx.room.Room
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Glide.with
 import com.example.kotlin_practice.databinding.ActivityMainBinding
+import com.example.kotlin_practice.model.User
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.database.DataSnapshot
@@ -55,52 +56,62 @@ import kotlin.concurrent.thread
 class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     val database =  Firebase.database("https://android-with-kotlin-8d5bc-default-rtdb.asia-southeast1.firebasedatabase.app/")
-    val myRef = database.getReference("users")
+    val usersRef = database.getReference("users")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        with(binding){
+            btnSignin.setOnClickListener { signin() }
+            btnSignup.setOnClickListener { signup() }
+        }
+    }
 
-        myRef.addValueEventListener(object :ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                binding.txtList.text = ""
-                for(item in snapshot.children){ // snapshot.children에 user들이 저장되어 있음 그중 하나씩 접근(item)
-                    item.getValue(User::class.java)?.let { user-> //getValue로 파이어베이스 데이터를 가져옴 이때 아직 코틀린 클래스가 아니므로 타입캐스팅을 해줌
-                        binding.txtList.append("${user.name} : ${user.password}\n")
+    fun signup(){
+        with(binding){
+            val id = edID.text.toString()
+            val password = edPassword.text.toString()
+            val name = edName.text.toString()
+
+            if(id.isNotEmpty() && password.isNotEmpty() && name.isNotEmpty()){
+                usersRef.child(id).get().addOnSuccessListener {
+                    if(it.exists()) { Toast.makeText(this@MainActivity, "아이디가 존재합니다.", Toast.LENGTH_SHORT).show() }
+                    else{
+                        val user = User(id, password, name)
+                        usersRef.child(id).setValue(user)
+                        signin()
                     }
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                print(error.message)
-            }
-        })
-
-        with(binding){
-            btnPost.setOnClickListener {
-                val name = edName.text.toString()
-                val password = edAge.text.toString()
-                val user = User(name, password)
-                addItem(user)
-            }
+            else { Toast.makeText(this@MainActivity, "아이디 비밀번호 별명을 모두 입력해야 합니다.", Toast.LENGTH_SHORT).show() }
         }
-
     }
-    fun addItem(user:User){
-        val id = myRef.push().key!!
-        user.id = id
-        myRef.child(id).setValue(user)
+
+    fun signin(){
+        with(binding){
+            val id = edID.text.toString()
+            val password = edPassword.text.toString()
+
+            if(id.isNotEmpty() && password.isNotEmpty()){
+                usersRef.child(id).get().addOnSuccessListener {
+                    if(it.exists()){
+                        it.getValue(User::class.java)?.let { user->
+                            if(user.password == password) { goChatRoomList(user.id, user.name) }
+                            else { Toast.makeText(this@MainActivity, "비밀번호가 다릅니다.", Toast.LENGTH_SHORT).show() }
+                        }
+                    }
+                    else { Toast.makeText(this@MainActivity, "아이디가 존재하지 않습니다.",Toast.LENGTH_SHORT).show() }
+                }
+            }
+            else { Toast.makeText(this@MainActivity, "아이디 비밀번호를 입력해야 합니다.",Toast.LENGTH_SHORT).show() }
+        }
     }
-}
 
-class User{
-    var id:String = ""
-    var name:String = ""
-    var password:String = ""
+    fun goChatRoomList(userId:String, userName:String){
+        val intent = Intent(this@MainActivity, ChatListActivity::class.java)
 
-    constructor()
-    constructor(name:String, password:String){
-        this.name = name
-        this.password = password
+        intent.putExtra("userId", userId)
+        intent.putExtra("userName", userName)
+        startActivity(intent)
     }
 }
